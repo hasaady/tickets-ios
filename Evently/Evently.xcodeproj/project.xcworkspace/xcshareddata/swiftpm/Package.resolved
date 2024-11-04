@@ -1,0 +1,33 @@
+{
+  "originHash" : "129e4137f3656d8e27efba57a2884cef5cb173e75511e3a5c1ab641fc82e312f",
+  "pins" : [
+    {
+      "identity" : "pulse",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Pulse",
+      "state" : {
+        "revision" : "c102aaa266ac69a26d08ee6861da710283988e3b",
+        "version" : "5.1.2"
+      }
+    },
+    {
+      "identity" : "realm-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-core.git",
+      "state" : {
+        "revision" : "85eeca41654cc9070ad81a21a4b1d153ad467c33",
+        "version" : "14.13.1"
+      }
+    },
+    {
+      "identity" : "realm-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-swift",
+      "state" : {
+        "revision" : "5553cfd1c789efdb3d6daf7f0cc0733cfe601846",
+        "version" : "10.54.1"
+      }
+    }
+  ],
+  "version" : 3
+}
