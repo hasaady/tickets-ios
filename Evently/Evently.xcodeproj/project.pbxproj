@@ -10,8 +10,10 @@
 		E319BF812CD94B32002D7A50 /* Pulse in Frameworks */ = {isa = PBXBuildFile; productRef = E319BF802CD94B32002D7A50 /* Pulse */; };
 		E319BF832CD94B32002D7A50 /* PulseProxy in Frameworks */ = {isa = PBXBuildFile; productRef = E319BF822CD94B32002D7A50 /* PulseProxy */; };
 		E319BF852CD94B32002D7A50 /* PulseUI in Frameworks */ = {isa = PBXBuildFile; productRef = E319BF842CD94B32002D7A50 /* PulseUI */; };
-		E319BF8F2CD95472002D7A50 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E319BF8E2CD95472002D7A50 /* RealmSwift */; };
-		E319BF902CD95472002D7A50 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = E319BF8E2CD95472002D7A50 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E39937EE2CDE2B5700151313 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E39937ED2CDE2B5700151313 /* RealmSwift */; };
+		E39937F02CDE2B6900151313 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = E39937ED2CDE2B5700151313 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E39939232CDE5A1A00151313 /* SwiftIContainer in Frameworks */ = {isa = PBXBuildFile; productRef = E39939222CDE5A1A00151313 /* SwiftIContainer */; };
+		E39939272CDE604F00151313 /* SwiftNetwork in Frameworks */ = {isa = PBXBuildFile; productRef = E39939262CDE604F00151313 /* SwiftNetwork */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -21,7 +23,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E319BF902CD95472002D7A50 /* RealmSwift in Embed Frameworks */,
+				E39937F02CDE2B6900151313 /* RealmSwift in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -45,10 +47,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E319BF8F2CD95472002D7A50 /* RealmSwift in Frameworks */,
 				E319BF812CD94B32002D7A50 /* Pulse in Frameworks */,
 				E319BF852CD94B32002D7A50 /* PulseUI in Frameworks */,
+				E39939232CDE5A1A00151313 /* SwiftIContainer in Frameworks */,
+				E39939272CDE604F00151313 /* SwiftNetwork in Frameworks */,
 				E319BF832CD94B32002D7A50 /* PulseProxy in Frameworks */,
+				E39937EE2CDE2B5700151313 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +107,9 @@
 				E319BF802CD94B32002D7A50 /* Pulse */,
 				E319BF822CD94B32002D7A50 /* PulseProxy */,
 				E319BF842CD94B32002D7A50 /* PulseUI */,
-				E319BF8E2CD95472002D7A50 /* RealmSwift */,
+				E39937ED2CDE2B5700151313 /* RealmSwift */,
+				E39939222CDE5A1A00151313 /* SwiftIContainer */,
+				E39939262CDE604F00151313 /* SwiftNetwork */,
 			);
 			productName = Evently;
 			productReference = E319BEE12CD94985002D7A50 /* Evently.app */;
@@ -134,8 +140,10 @@
 			mainGroup = E319BED82CD94985002D7A50;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				E319BF7A2CD94B24002D7A50 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				E319BF7F2CD94B32002D7A50 /* XCRemoteSwiftPackageReference "Pulse" */,
+				E39937E62CDE2AFD00151313 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				E39939212CDE5A1A00151313 /* XCRemoteSwiftPackageReference "swift-icontainer" */,
+				E39939252CDE604F00151313 /* XCRemoteSwiftPackageReference "swift-network" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E319BEE22CD94985002D7A50 /* Products */;
@@ -367,7 +375,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E319BF7A2CD94B24002D7A50 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+		E319BF7F2CD94B32002D7A50 /* XCRemoteSwiftPackageReference "Pulse" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Pulse";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.2;
+			};
+		};
+		E39937E62CDE2AFD00151313 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift";
 			requirement = {
@@ -375,12 +391,20 @@
 				version = 10.54.1;
 			};
 		};
-		E319BF7F2CD94B32002D7A50 /* XCRemoteSwiftPackageReference "Pulse" */ = {
+		E39939212CDE5A1A00151313 /* XCRemoteSwiftPackageReference "swift-icontainer" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kean/Pulse";
+			repositoryURL = "https://github.com/hasaady/swift-icontainer";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.2;
+				branch = main;
+				kind = branch;
+			};
+		};
+		E39939252CDE604F00151313 /* XCRemoteSwiftPackageReference "swift-network" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hasaady/swift-network";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -401,10 +425,20 @@
 			package = E319BF7F2CD94B32002D7A50 /* XCRemoteSwiftPackageReference "Pulse" */;
 			productName = PulseUI;
 		};
-		E319BF8E2CD95472002D7A50 /* RealmSwift */ = {
+		E39937ED2CDE2B5700151313 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E319BF7A2CD94B24002D7A50 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			package = E39937E62CDE2AFD00151313 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		E39939222CDE5A1A00151313 /* SwiftIContainer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E39939212CDE5A1A00151313 /* XCRemoteSwiftPackageReference "swift-icontainer" */;
+			productName = SwiftIContainer;
+		};
+		E39939262CDE604F00151313 /* SwiftNetwork */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E39939252CDE604F00151313 /* XCRemoteSwiftPackageReference "swift-network" */;
+			productName = SwiftNetwork;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

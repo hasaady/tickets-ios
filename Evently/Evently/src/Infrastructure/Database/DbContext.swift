@@ -39,7 +39,7 @@ enum DbError: Error {
     static var shared = DatabaseActor()
 }
 
-class DbContextImp: DbContext {
+actor DbContextImp: @preconcurrency DbContext {
    
     var realm: Realm!
    
@@ -64,19 +64,19 @@ class DbContextImp: DbContext {
     }
 
     func add<T: Presistable>(_ object: T) async throws {
-        try await realm.write {
+        try await realm.asyncWrite {
             realm.add(object, update: .modified)
         }
     }
     
     func add<T: Presistable>(_ objects: [T]) async throws {
-        try await realm.write {
+        try await realm.asyncWrite {
             realm.add(objects, update: .modified)
         }
     }
 
     func replace<T: Presistable>(_ objects: [T]) async throws {
-        try await realm.write {
+        try await realm.asyncWrite {
             let deletedObjects = realm.objects(T.self)
             realm.delete(deletedObjects)
             
@@ -85,19 +85,19 @@ class DbContextImp: DbContext {
     }
 
     func update(_ block: @escaping (Realm) -> Void) async throws {
-        try await realm.write {
+        try await realm.asyncWrite {
             block(realm)
         }
     }
 
     func delete<T: Presistable>(_ object: T) async throws {
-        try await realm.write {
+        try await realm.asyncWrite {
             realm.delete(object)
         }
     }
 
     func deleteAll<T: Presistable>(_ type: T.Type) async throws {
-        try await realm.write {
+        try await realm.asyncWrite {
             let objects = realm.objects(type)
             realm.delete(objects)
         }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "129e4137f3656d8e27efba57a2884cef5cb173e75511e3a5c1ab641fc82e312f",
+  "originHash" : "bcaea5e8e7b65fd5865a5ac65cfc1cabae5ede2061cb2a000fea56840233515e",
   "pins" : [
     {
       "identity" : "pulse",
@@ -26,6 +26,24 @@
       "state" : {
         "revision" : "5553cfd1c789efdb3d6daf7f0cc0733cfe601846",
         "version" : "10.54.1"
+      }
+    },
+    {
+      "identity" : "swift-icontainer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hasaady/swift-icontainer",
+      "state" : {
+        "branch" : "main",
+        "revision" : "259b73ab21519c8c99415a747fcafcd81e4bbd60"
+      }
+    },
+    {
+      "identity" : "swift-network",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hasaady/swift-network",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f796341cf9ca123a3c7f60262cea22480b4940d7"
       }
     }
   ],

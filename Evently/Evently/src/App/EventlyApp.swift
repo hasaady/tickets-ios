@@ -9,6 +9,8 @@ import SwiftUI
 import Pulse
 import PulseUI
 import PulseProxy
+import SwiftIContainer
+import SwiftNetwork
 
 @main
 struct EventlyApp: App {
@@ -64,10 +66,33 @@ class AppState: ObservableObject {
     }
     
     func registerDependeiies() {
-//        DIContainer.register(type: DbContext.self, singleton: DbContextImp())
+        CoreDI.register()
+        ServicesDI.register()
+    }
+}
 
+
+struct ServicesDI {
+    static func register() {
         DIContainer.register(type: NetworkProvider.self) {
-            NetworkProviderImp()
+            NetworkProviderImp(baseURL: "http://192.168.1.103:8080")
         }
+        
+        DIContainer.register(type: GetRemoteEventsUseCase.self) {
+            GetRemoteEventsUseCase()
+        }
+        DIContainer.register(type: EventRepositoryProtocol.self) {
+            EventRepository()
+        }
+        DIContainer.register(type: EventRepositoryProtocol.self) {
+            EventRepository()
+        }
+    }
+}
+
+
+struct CoreDI {
+    static func register() {
+        DIContainer.register(type: DbContext.self, singleton: DbContextImp())
     }
 }

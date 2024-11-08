@@ -10,9 +10,8 @@ import RealmSwift
 
 class EventListViewModel: ObservableObject {
     @ObservedResults(EventEntity.self) var events
-    
+        
     @Published var filteredEvents: [EventEntity] = []
-    
     @Published var isShowingFilter = false
     @Published var filterText = ""
     @Published var isLoading = false

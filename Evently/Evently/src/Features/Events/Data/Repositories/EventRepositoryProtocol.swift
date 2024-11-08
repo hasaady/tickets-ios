@@ -5,6 +5,9 @@
 //  Created by Hanan on 01/11/2024.
 //
 
+import SwiftIContainer
+import SwiftNetwork
+
 protocol EventRepositoryProtocol {
     func getEvents() async throws -> [EventEntity]
 }

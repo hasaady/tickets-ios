@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftIContainer
 
 struct FilterEventsUseCase {
     @Injected var context: DbContext

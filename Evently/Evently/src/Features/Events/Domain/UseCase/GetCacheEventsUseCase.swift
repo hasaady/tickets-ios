@@ -5,6 +5,8 @@
 //  Created by Hanan on 01/11/2024.
 //
 
+import SwiftIContainer
+
 struct GetCacheEventsUseCase {
     @Injected var context: DbContext
 
