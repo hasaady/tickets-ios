@@ -67,23 +67,23 @@ class AppState: ObservableObject {
     
     func registerDependeiies() {
         CoreDI.register()
-        ServicesDI.register()
+        EventsDI.register()
     }
 }
 
 
-struct ServicesDI {
+struct EventsDI {
     static func register() {
-        DIContainer.register(type: NetworkProvider.self) {
-            NetworkProviderImp(baseURL: "http://192.168.1.103:8080")
+        DIContainer.register(type: EventPublisher<ServicesEvent>.self, singleton: EventPublisher<ServicesEvent>())
+        
+        DIContainer.register(type: FetchEventsUseCase.self) {
+            FetchEventsUseCase()
         }
         
-        DIContainer.register(type: GetRemoteEventsUseCase.self) {
-            GetRemoteEventsUseCase()
-        }
         DIContainer.register(type: EventRepositoryProtocol.self) {
             EventRepository()
         }
+        
         DIContainer.register(type: EventRepositoryProtocol.self) {
             EventRepository()
         }
@@ -93,6 +93,12 @@ struct ServicesDI {
 
 struct CoreDI {
     static func register() {
-        DIContainer.register(type: DbContext.self, singleton: DbContextImp())
+       // DIContainer.register(type: DbContext.self, singleton: DbContextImp())
+        
+        DIContainer.register(type: DbContext.self) {
+            DbContextImp()
+        }
+        
+        DIContainer.register(type: NetworkProvider.self, singleton: NetworkProviderImp(baseURL: "http://172.20.10.4:8080"))
     }
 }

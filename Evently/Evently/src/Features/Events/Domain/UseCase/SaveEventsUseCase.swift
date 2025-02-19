@@ -23,6 +23,6 @@ struct AddEventsUseCase {
     let entities: [EventEntity]
     
     func execute() async throws {
-        try await context.add(entities)
+        try await context.save(entities)
     }
 }

@@ -9,7 +9,8 @@ import SwiftUI
 
 struct EventListView: View {
     @StateObject var viewModel = EventListViewModel()
-    
+    @State private var isShowingCreateEventView = false // State to control modal presentation
+
     var body: some View {
         NavigationView {
             VStack {
@@ -41,18 +42,19 @@ struct EventListView: View {
                     Button(action: viewModel.getEvents) {
                         Label("Refresh", systemImage: "arrow.clockwise")
                     }
-                    Button(action: { viewModel.isShowingFilter.toggle() }) {
-                        Label("Filter", systemImage: "line.horizontal.3.decrease.circle")
+                }
+                ToolbarItem(placement: .bottomBar) { // Add to bottom bar if preferred
+                    Button(action: { isShowingCreateEventView = true }) {
+                        Label("Create New Event", systemImage: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.isShowingFilter) {
-                FilterView(filterText: $viewModel.filterText, applyFilter: viewModel.filterEvents)
+            .sheet(isPresented: $isShowingCreateEventView) {
+                CreateEventView() // Present a view for creating new events
             }
             .alert(isPresented: $viewModel.showError, content: {
                 Alert(title: Text("Error"), message: Text(viewModel.errorMessage), dismissButton: .default(Text("OK")))
             })
-            //.onAppear(perform: viewModel.getRemoteEvents)
         }
     }
 }

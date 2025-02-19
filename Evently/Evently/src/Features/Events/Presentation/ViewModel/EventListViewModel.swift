@@ -7,24 +7,51 @@
 
 import Foundation
 import RealmSwift
-
+import SwiftIContainer
+import Combine
+ 
 class EventListViewModel: ObservableObject {
-    @ObservedResults(EventEntity.self) var events
-        
-    @Published var filteredEvents: [EventEntity] = []
+    @Injected var eventPublisher: EventPublisher<ServicesEvent>
+    
+    @Published var events: [EventEntity] = []
     @Published var isShowingFilter = false
     @Published var filterText = ""
     @Published var isLoading = false
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
     
-    func getCacheEvents() {
+    private var cancellables = Set<AnyCancellable>()
 
+    init() {
+        loadEvents()
+        subscriptions()
+    }
+    
+    private func subscriptions() {
+        eventPublisher.publisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                self?.handleEvent(event)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func handleEvent(_ event: ServicesEvent) {
+        switch event {
+        case .didClearData:
+            events.removeAll()
+            getEvents()
+        }
+    }
+
+    func loadEvents() {
         Task {
             do {
-                debugPrint("fetching cached events")
-                _ = try await GetCacheEventsUseCase().execute()
-            } catch {
+                let result = try await GetCacheEventsUseCase().execute()
+                await MainActor.run {
+                    self.events = result
+                }
+            } catch { 
                 debugPrint(error)
             }
         }
@@ -37,14 +64,20 @@ class EventListViewModel: ObservableObject {
         Task {
             do {
                 debugPrint("requesting remote events")
-                let events = try await GetRemoteEventsUseCase().execute()
-                try await SaveEventsUseCase(entities: events).execute()
+                let result = try await FetchEventsUseCase().execute()
+//
+//                DispatchQueue.main.async {
+//                    self.events = result
+//                }
+
             } catch {
                 errorMessage = error.localizedDescription
                 showError = true
             }
             
-            isLoading = false
+            DispatchQueue.main.async {
+                self.isLoading = false
+            }
         }
     }
     

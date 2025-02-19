@@ -1,114 +1,179 @@
 //
-//  DbContext.swift
-//  Evently
+// DbContext.swift
+// CoreDb
 //
-//  Created by Hanan on 27/10/2024.
+// Created by Hanan on 27/10/2024.
 //
 
 import Foundation
 import RealmSwift
 
-typealias Presistable = Object
+public typealias Presistable = Object
 
-protocol DbContext {
-
-    func add<T: Presistable>(_ object: T) async throws
-   
-    func add<T: Presistable>(_ object: [T]) async throws
+public protocol DbContext {
+    
+    func save<T: Presistable>(_ object: T) async throws
+    
+    func save<T: Presistable>(_ object: [T]) async throws
     
     func replace<T: Presistable>(_ objects: [T]) async throws
-
-    func objectsCount<T: Presistable>(_ type: T.Type) -> Int
-
-    func update(_ block: @escaping (Realm) -> Void) async throws
-
+    
+    func update<T: Presistable>(object: T, _ block: @escaping (T?) -> Void) async throws
+    
+    func update<T: Presistable>(objects: [T], _ block: @escaping ([T]) -> Void) async throws
+    
     func delete<T: Presistable>(_ object: T) async throws
-
+    
     func deleteAll<T: Presistable>(_ type: T.Type) async throws
-
-    func fetchAll<T: Presistable>(_ type: T.Type) async throws -> Results<T>
-
-    func fetch<T: Presistable>(with predicate: NSPredicate, _ type: T.Type) async throws -> Results<T>
+    
+    func fetch<T: Presistable>(_ type: T.Type) throws -> [T]
+    
+    func fetchFirst<T: Presistable>(_ type: T.Type) throws -> T?
+    
+    func fetch<T: Presistable>(with predicate: NSPredicate, _ type: T.Type) throws -> [T]
+    
+    func fetchFirst<T: Presistable>(with predicate: NSPredicate, _ type: T.Type) throws -> T?
 }
 
 enum DbError: Error {
     case dbNotInitialized
 }
 
-@globalActor fileprivate actor DatabaseActor: GlobalActor {
+@globalActor actor DatabaseActor: GlobalActor {
     static var shared = DatabaseActor()
 }
 
-actor DbContextImp: @preconcurrency DbContext {
-   
-    var realm: Realm!
-   
-    init() {
-        Task {
-            await initializeRealm()
+actor DbContextImp: DbContext {
+    
+    public init() {}
+    
+    public func save<T: Presistable>(_ object: T) async throws {
+        let realm = try await Realm(actor: self)
+        
+        let resolvedObject = object.threadSafeCopy()
+        
+        try await realm.asyncWrite {
+            if let resolvedObject = resolvedObject {
+                realm.add(resolvedObject, update: .modified)
+            }
         }
     }
-
-    private func initializeRealm() async {
-        do {
-            self.realm = try await Realm(actor: DatabaseActor.shared)
-            print("Realm is located at:", realm.configuration.fileURL!)
+    
+    public func save<T: Presistable>(_ objects: [T]) async throws {
+        let realm = try await Realm(actor: self)
+        
+        let resolvedObjects = objects.compactMap { $0.threadSafeCopy() }
+        
+        try await realm.asyncWrite {
+            resolvedObjects.forEach { resolvedObject in
+                realm.create(
+                    type(of: resolvedObject),
+                    value: resolvedObject,
+                    update: .modified
+                )
+            }
+        }
+    }
+    
+    public func replace<T: Presistable>(_ objects: [T]) async throws {
+        let realm = try await Realm(actor: self)
+        
+        let resolvedObjects = objects.compactMap { $0.threadSafeCopy() }
+        
+        try await realm.asyncWrite {
             
-        } catch {
-            debugPrint("Error initializing Realm: \(error)")
-        }
-    }
-    
-    func objectsCount<T: Presistable>(_ type: T.Type) -> Int {
-        realm.objects(type).count
-    }
-
-    func add<T: Presistable>(_ object: T) async throws {
-        try await realm.asyncWrite {
-            realm.add(object, update: .modified)
-        }
-    }
-    
-    func add<T: Presistable>(_ objects: [T]) async throws {
-        try await realm.asyncWrite {
-            realm.add(objects, update: .modified)
-        }
-    }
-
-    func replace<T: Presistable>(_ objects: [T]) async throws {
-        try await realm.asyncWrite {
             let deletedObjects = realm.objects(T.self)
             realm.delete(deletedObjects)
             
-            realm.add(objects)
+            realm.add(resolvedObjects, update: .modified)
         }
     }
-
-    func update(_ block: @escaping (Realm) -> Void) async throws {
+    
+    public func update<T: Presistable>(object: T, _ block: @escaping (T?) -> Void) async throws {
+        let realm = try await Realm(actor: self)
+        
+        let reference = ThreadSafeReference(to: object)
+        
         try await realm.asyncWrite {
-            block(realm)
+            let resolvedObject = realm.resolve(reference)
+            block(resolvedObject)
         }
     }
-
-    func delete<T: Presistable>(_ object: T) async throws {
+    
+    public func update<T: Presistable>(objects: [T], _ block: @escaping ([T]) -> Void) async throws {
+        let realm = try await Realm(actor: self)
+        
+        let references = objects.map { ThreadSafeReference(to: $0) }
+        
+        try await realm.asyncWrite {
+            let resolvedObjects = references.compactMap { realm.resolve($0) }
+            
+            block(resolvedObjects)
+        }
+    }
+    
+    public func delete<T: Presistable>(_ object: T) async throws {
+        let realm = try await Realm(actor: self)
+        
         try await realm.asyncWrite {
             realm.delete(object)
         }
     }
-
-    func deleteAll<T: Presistable>(_ type: T.Type) async throws {
+    
+    public func deleteAll<T: Presistable>(_ type: T.Type) async throws {
+        let realm = try await Realm(actor: self)
+        
         try await realm.asyncWrite {
             let objects = realm.objects(type)
             realm.delete(objects)
         }
     }
-
-    func fetchAll<T: Presistable>(_ type: T.Type) async throws -> Results<T> {
-        return realm.objects(type)
-    }
-
-    func fetch<T: Presistable>(with predicate: NSPredicate, _ type: T.Type) async throws -> Results<T> {
-        return realm.objects(type).filter(predicate)
+    
+    nonisolated public func fetch<T: Presistable>(_ type: T.Type) throws -> [T] {
+        let realm = try Realm()
+        let results = realm.objects(type)
+        return Array(results)
     }
     
+    
+    nonisolated public func fetchFirst<T: Presistable>(_ type: T.Type) throws -> T? {
+        let realm = try Realm()
+        return realm.objects(type).first
+    }
+    
+    nonisolated public func fetch<T: Presistable>(with predicate: NSPredicate, _ type: T.Type) throws -> [T] {
+        let realm = try Realm()
+        let results = realm.objects(type).filter(predicate)
+        return Array(results)
+    }
+    
+    nonisolated public func fetchFirst<T: Presistable>(with predicate: NSPredicate, _ type: T.Type) throws -> T? {
+        let realm = try Realm()
+        return realm.objects(type).filter(predicate).first
+    }
+}
+
+extension Object {
+    func threadSafeCopy() -> Self? {
+        
+        guard let _ = self.realm else {
+            return self
+        }
+        
+        let threadSafeReference = ThreadSafeReference(to: self)
+        do {
+            
+            let resolvedRealm = try Realm()
+            guard let resolvedObject = resolvedRealm.resolve(threadSafeReference) else {
+                print("Failed to resolve ThreadSafeReference.")
+                
+                return nil
+            }
+            return resolvedObject
+            
+        } catch {
+            print("Error accessing Realm instance: \(error)")
+            return nil
+        }
+    }
 }

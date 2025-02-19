@@ -11,7 +11,7 @@ struct GetCacheEventsUseCase {
     @Injected var context: DbContext
 
     func execute() async throws -> [EventEntity] {
-        let result = try await context.fetchAll(EventEntity.self)
+        let result = try await context.fetch(EventEntity.self)
         return Array(result)
     }
 }
